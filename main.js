@@ -1,8 +1,11 @@
 $(document).ready(function() {
 
+var xKey = 'displacement', yKey = 'mpg';
+var xValue = function(d) { return d[xKey]; }, yValue = function(d) { return d[yKey]; };
+
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 600 - margin.left - margin.right,
-    height = 270 - margin.top - margin.bottom;
+    width = 400 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
 // Set the ranges
@@ -15,8 +18,8 @@ var yAxis = d3.svg.axis().scale(y)
     .orient("left").ticks(5);
 // Define the line
 var valueline = d3.svg.line()
-    .x(function(d) { return x(d.acceleration); })
-    .y(function(d) { return y(d.mpg); });
+    .x(function(d) { return x(d[xKey]); })
+    .y(function(d) { return y(d[yKey]); });
     
 // Adds the svg canvas
 var svg = d3.select("body")
@@ -28,14 +31,24 @@ var svg = d3.select("body")
               "translate(" + margin.left + "," + margin.top + ")");
 // Get the data
 d3.csv("car.csv", function(error, data) {
-   
+	console.log(data[0])
    data.forEach(function(d) {
-		d.acceleration = +d.acceleration;
-        d.mpg = +d.mpg;
+	    // csv data are input one row at a time
+		var key = Object.keys(d)
+		for(var i = 0; i < key.length-1; i++) {
+		// change string into number format
+			if (!isNaN(d[key[i]])){
+				d[key[i]] = +d[key[i]];
+				}
+		}
+	    
+		d[xKey] = +d[xKey];
+        d[yKey] = +d[yKey];
     });
+	console.log(data[0])
     // Scale the range of the data
-    x.domain(d3.extent(data, function(d) { return d.acceleration; }));
-    y.domain([0, d3.max(data, function(d) { return d.mpg; })]);
+    x.domain([d3.min(data, xValue)-10, d3.max(data, xValue)+30]);
+    y.domain([d3.min(data, yValue)-5, d3.max(data, yValue)+5]);
     // Add the valueline path.
     svg.append("path")
         .attr("class", "line")
@@ -45,17 +58,32 @@ d3.csv("car.csv", function(error, data) {
         .data(data)
       .enter().append("circle")
         .attr("r", 3.5)
-        .attr("cx", function(d) { return x(d.acceleration); })
-        .attr("cy", function(d) { return y(d.mpg); });
+        .attr("cx", function(d) { return x(d[xKey]); })
+        .attr("cy", function(d) { return y(d[yKey]); })
+		
     // Add the X Axis
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(xAxis)
+	  .append("text")
+        .attr("class", "label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text(xKey);
+	  
     // Add the Y Axis
     svg.append("g")
         .attr("class", "y axis")
-        .call(yAxis);
+        .call(yAxis)
+	  .append("text") 
+        .attr("class", "label")
+        .attr("x", 30)
+        .attr("y", -6)
+		.attr("transform", "rotate(90)")
+        .style("text-anchor", "end")
+        .text(yKey);
 });
 
 
