@@ -1,1 +1,10 @@
-May still need CSS file for formatting. Type <link rel=stylesheet type=text/css href=style.css/>  in the HTML HEAD.
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
