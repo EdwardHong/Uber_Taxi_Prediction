@@ -1,72 +1,19 @@
+//Render  an  interactive scatterplot of  the data:
+//– Dimensions   for  x-axis  and y-axis  can be  selected.
+//– Filtering  on MPG is  supported.
+//– Hovered car name  is  shown as  the h4  header.
+
 $(document).ready(function() {
 
-d3.csv("car.csv", function(d) {
- return {
-
-  };
-}, 
-function(dataset) {
-    d = dataset;
-    data  = dataset;
-    values = dataset;
-    var select_x = document.getElementById("sel-x");
-    var options = Object.keys(values[0])
-    for(var i = 0; i < options.length-1; i++) {
-        var opt = options[i];
-        var el = document.createElement("option");
-        el.textContent = opt;
-        el.value = opt;
-        select_x.appendChild(el);
-    }
+console.log(document.getElementById('sel-x'))
+var draw = function(xKey, yKey) {
     
-    var select_y = document.getElementById("sel-y");
 
-    for(var i = 0; i < options.length-1; i++) {
-        var opt = options[i];
-        var el = document.createElement("option");
-        el.textContent = opt;
-        el.value = opt;
-        select_y.appendChild(el);
-    }
-   
-});
-    var sel_x = document.getElementById("sel-x");
-    var selected_x = sel_x.options[sel_x.selectedIndex].value;
-    var sel_y = document.getElementById("sel-x");
-    var selected_y = sel_y.options[sel_y.selectedIndex].value;
+var xValue = function(d) { return d[xKey]; }, yValue = function(d) { return d[yKey]; };
 
-    $("#sel-x").change(function() {
-        var selected_x = $("#sel-x option:selected").val();
-        draw(selected_x,selected_y);
-    });
-    $("#sel-y").change(function() {
-        var selected_y = $("#sel-y option:selected").val();
-        draw(selected_x,selected_y);
-    });
-
-    console.log(selected_x)
-
-});
-
-var draw = function(xKey,yKey) {
-
-//var xKey = 'displacement';
-//var yKey = 'mpg';
-var xValue = function(d) { return d[xKey]; };
-var yValue = function(d) { return d[yKey]; };
-
-var min_mpg = document.getElementById('mpg-min').value;
-var max_mpg = document.getElementById('mpg-max').value;
-min_mpg=+min_mpg;
-max_mpg=+max_mpg;
-
-
-
-var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 300 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
-// Parse the date / time
-var parseDate = d3.time.format("%d-%b-%y").parse;
+var margin = {top: 30, right: 20, bottom: 60, left: 30},
+    width = 400 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 // Set the ranges
 var x = d3.scale.linear().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
@@ -79,69 +26,69 @@ var yAxis = d3.svg.axis().scale(y)
 var valueline = d3.svg.line()
     .x(function(d) { return x(d[xKey]); })
     .y(function(d) { return y(d[yKey]); });
-// add the tooltip area to the webpage
-var tooltip = d3.select("#hovered").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
     
-// Adds the svg canvas
-var svg = d3.select("body")
+// Adds the svg canvas 
+var canvas = d3.select(".plot")
+
     .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
+
+// add the tooltip area to the webpage
+var tooltip = d3.select("#hovered").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
 // Get the data
 d3.csv("car.csv", function(error, data) {
-    console.log(data[0])
    data.forEach(function(d) {
+
         // csv data are input one row at a time
-        var key = Object.keys(d);
-        for(var i = 0; i < key.length-1; i++) {
+        var key = Object.keys(d)
+        for(var i = 0; i < key.length; i++) {
         // change string into number format
             if (!isNaN(d[key[i]])){
                 d[key[i]] = +d[key[i]];
                 }
-	   else{ 
-	        d[key[i]] = 0;
-	       }
         }
-        
-        d[xKey] = +d[xKey];
-        d[yKey] = +d[yKey];
+
     });
-	var res = [];
-	data.forEach(function(d){
-	    var key = Object.keys(d);	
-	    if (d["mpg"] >= min_mpg && d["mpg"]<=max_mpg){
-		res.push(d);
-		} 
+    
+    // Try to assign values to axis x and axis y
+    var selx = document.getElementById("sel-x");
+    console.log(data)
+    var options = Object.keys(data[0])  
+    for(var i = 1; i < options.length-1; i++) {
+    var opt = options[i];
+    var el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    selx.appendChild(el);
+    }
+    
+    var sely = document.getElementById("sel-y");
+    for(var i = 1; i < options.length-1; i++) {
+    var opt = options[i];
+    var el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    sely.appendChild(el);
+    }
 
-	});
-	console.log(res[0]);
-	if (res.length>0){
-	    data = res;
-	    }
-    console.log(data[0])
     // Scale the range of the data
-    x.domain([d3.min(data, xValue)-10, d3.max(data, xValue)+30]);
+    x.domain([d3.min(data, xValue)-10, d3.max(data, xValue)+10]);
     y.domain([d3.min(data, yValue)-5, d3.max(data, yValue)+5]);
-    // Add the valueline path.
-    svg.append("path")
-        .attr("class", "line")
-        .data(data);
     // Add the scatterplot
-    var dots = svg.selectAll("dot").data(data);
-    dots.attr("class","update");
-
-    //UPDATE
-    dots.enter().append('circle')
-        .attr("class", "enter")
-        .attr("r", 2)
+    var scatterplot = canvas.selectAll("dot").data(data);
+    scatterplot.enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
         .attr("cx", function(d) { return x(d[xKey]); })
         .attr("cy", function(d) { return y(d[yKey]); })
-		.on("mouseover", function(d) {
+        .on("mouseover", function(d) {
           tooltip.transition()
                .duration(200)
                .style("opacity", .9);
@@ -154,35 +101,49 @@ d3.csv("car.csv", function(error, data) {
                .duration(500)
                .style("opacity", 0);
       });
-    dots.exit().remove();
-
+    scatterplot.exit().remove();    
     // Add the X Axis
-    svg.append("g")
+    canvas.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
       .append("text")
-        .attr("class", "label")
+        .attr("class", "x label")
         .attr("x", width)
         .attr("y", -6)
         .style("text-anchor", "end")
         .text(xKey);
       
     // Add the Y Axis
-    svg.append("g")
+    canvas.append("g")
         .attr("class", "y axis")
         .call(yAxis)
       .append("text") 
-        .attr("class", "label")
+        .attr("class", "y label")
         .attr("x", 30)
         .attr("y", -6)
         .attr("transform", "rotate(90)")
         .style("text-anchor", "end")
         .text(yKey);
+})
+}
+
+draw('displacement', 'mpg');
+// var xKey = 'displacement', yKey = 'mpg';
+// document.getElementById("sel-x").change(draw('mpg', 'displacement'));
+var update = $("#update");
+var mpg_min = $("#mpg-min");
+var mpg_max = $("#mpg-max");
+
+update.click(function(){    
+
+    update.css('color','red');
+    
+    });
+
+
 });
-object = document.getElementById('update');
-object.onclick=function(){
-d3.select("svg").remove();
-    };
-d3.select("svg").remove();
-};
+
+
+
+
