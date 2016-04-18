@@ -55,6 +55,13 @@ var draw = function(xKey,yKey) {
 var xValue = function(d) { return d[xKey]; };
 var yValue = function(d) { return d[yKey]; };
 
+var min_mpg = document.getElementById('mpg-min').value;
+var max_mpg = document.getElementById('mpg-max').value;
+min_mpg=+min_mpg;
+max_mpg=+max_mpg;
+
+
+
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 300 - margin.left - margin.right,
     height = 300 - margin.top - margin.bottom;
@@ -90,17 +97,32 @@ d3.csv("car.csv", function(error, data) {
     console.log(data[0])
    data.forEach(function(d) {
         // csv data are input one row at a time
-        var key = Object.keys(d)
+        var key = Object.keys(d);
         for(var i = 0; i < key.length-1; i++) {
         // change string into number format
             if (!isNaN(d[key[i]])){
                 d[key[i]] = +d[key[i]];
                 }
+	   else{ 
+	        d[key[i]] = 0;
+	       }
         }
         
         d[xKey] = +d[xKey];
         d[yKey] = +d[yKey];
     });
+	var res = [];
+	data.forEach(function(d){
+	    var key = Object.keys(d);	
+	    if (d["mpg"] >= min_mpg && d["mpg"]<=max_mpg){
+		res.push(d);
+		} 
+
+	});
+	console.log(res[0]);
+	if (res.length>0){
+	    data = res;
+	    }
     console.log(data[0])
     // Scale the range of the data
     x.domain([d3.min(data, xValue)-10, d3.max(data, xValue)+30]);
@@ -158,7 +180,9 @@ d3.csv("car.csv", function(error, data) {
         .style("text-anchor", "end")
         .text(yKey);
 });
-
-
+object = document.getElementById('update');
+object.onclick=function(){
+d3.select("svg").remove();
+    };
 d3.select("svg").remove();
 };
