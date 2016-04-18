@@ -56,8 +56,8 @@ var xValue = function(d) { return d[xKey]; };
 var yValue = function(d) { return d[yKey]; };
 
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 400 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 300 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
 // Set the ranges
@@ -112,7 +112,7 @@ d3.csv("car.csv", function(error, data) {
     //UPDATE
     dots.enter().append('circle')
         .attr("class", "enter")
-        .attr("r", 3.5)
+        .attr("r", 2)
         .attr("cx", function(d) { return x(d[xKey]); })
         .attr("cy", function(d) { return y(d[yKey]); });
     dots.exit().remove();
