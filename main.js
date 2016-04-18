@@ -72,6 +72,10 @@ var yAxis = d3.svg.axis().scale(y)
 var valueline = d3.svg.line()
     .x(function(d) { return x(d[xKey]); })
     .y(function(d) { return y(d[yKey]); });
+// add the tooltip area to the webpage
+var tooltip = d3.select("#hovered").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
     
 // Adds the svg canvas
 var svg = d3.select("body")
@@ -114,7 +118,20 @@ d3.csv("car.csv", function(error, data) {
         .attr("class", "enter")
         .attr("r", 2)
         .attr("cx", function(d) { return x(d[xKey]); })
-        .attr("cy", function(d) { return y(d[yKey]); });
+        .attr("cy", function(d) { return y(d[yKey]); })
+		.on("mouseover", function(d) {
+          tooltip.transition()
+               .duration(200)
+               .style("opacity", .9);
+          tooltip.html(d.name)
+               .style("left", (d3.event.pageX + 5) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+          tooltip.transition()
+               .duration(500)
+               .style("opacity", 0);
+      });
     dots.exit().remove();
 
     // Add the X Axis
