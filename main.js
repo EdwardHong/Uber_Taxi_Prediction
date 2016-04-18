@@ -143,4 +143,5 @@ d3.csv("car.csv", function(error, data) {
 });
 
 
+d3.select("svg").remove();
 };
