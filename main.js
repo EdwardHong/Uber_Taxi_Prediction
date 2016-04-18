@@ -5,12 +5,10 @@
 
 $(document).ready(function() {
 
-console.log(document.getElementById('sel-x'))
 var draw = function(xKey, yKey) {
     
-
 var xValue = function(d) { return d[xKey]; }, yValue = function(d) { return d[yKey]; };
-
+var xMap = function(d) { return x(xValue(d));}, yMap = function(d) { return y(yValue(d));}
 var margin = {top: 30, right: 20, bottom: 60, left: 30},
     width = 400 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
@@ -25,18 +23,15 @@ var yAxis = d3.svg.axis().scale(y)
 // Define the line
 var valueline = d3.svg.line()
     .x(function(d) { return x(d[xKey]); })
-    .y(function(d) { return y(d[yKey]); });
-    
+    .y(function(d) { return y(d[yKey]); });   
 // Adds the svg canvas 
 var canvas = d3.select(".plot")
-
     .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
-
 // add the tooltip area to the webpage
 var tooltip = d3.select("#hovered").append("div")
     .attr("class", "tooltip")
@@ -44,22 +39,18 @@ var tooltip = d3.select("#hovered").append("div")
 
 // Get the data
 d3.csv("car.csv", function(error, data) {
-   data.forEach(function(d) {
-
+    data.forEach(function(d) {
         // csv data are input one row at a time
         var key = Object.keys(d)
         for(var i = 0; i < key.length; i++) {
         // change string into number format
             if (!isNaN(d[key[i]])){
-                d[key[i]] = +d[key[i]];
-                }
+                d[key[i]] = +d[key[i]];}
         }
-
     });
     
     // Try to assign values to axis x and axis y
     var selx = document.getElementById("sel-x");
-    console.log(data)
     var options = Object.keys(data[0])  
     for(var i = 1; i < options.length-1; i++) {
     var opt = options[i];
@@ -86,8 +77,8 @@ d3.csv("car.csv", function(error, data) {
     scatterplot.enter().append("circle")
         .attr("class", "dot")
         .attr("r", 3.5)
-        .attr("cx", function(d) { return x(d[xKey]); })
-        .attr("cy", function(d) { return y(d[yKey]); })
+        .attr("cx", xMap)
+        .attr("cy", yMap)
         .on("mouseover", function(d) {
           tooltip.transition()
                .duration(200)
@@ -129,17 +120,6 @@ d3.csv("car.csv", function(error, data) {
 }
 
 draw('displacement', 'mpg');
-// var xKey = 'displacement', yKey = 'mpg';
-// document.getElementById("sel-x").change(draw('mpg', 'displacement'));
-var update = $("#update");
-var mpg_min = $("#mpg-min");
-var mpg_max = $("#mpg-max");
-
-update.click(function(){    
-
-    update.css('color','red');
-    
-    });
 
 
 });
