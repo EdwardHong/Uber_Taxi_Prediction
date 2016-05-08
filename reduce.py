@@ -19,6 +19,6 @@ for line in sys.stdin:
         d[key] = val
     else:
         val = d[key] + val
-    val = ','.join(val)
-    print("%s\t%s" %(key,val))
+        val = ','.join(val)
+        print("%s\t%s" %(key,val))
 

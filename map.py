@@ -11,7 +11,8 @@ for line in sys.stdin:
     for record in csv_reader:
         if len(record) == 91:
             key = record[5]
-            s = [record[11],
+            s = [record[6],
+            record[11],
             record[31],
             record[36],
             record[16],
@@ -21,9 +22,9 @@ for line in sys.stdin:
             record[56],
             record[61],
             record[66]]
-            val = ", ".join(str(e) for e in s)
-            
-        
-
-            print ("%s\t%s"%(key, val))
+        elif len(record)==3:
+            key = record[0]
+            s = [record[1].split(":")[0],record[2]]
     
+        val = ", ".join(str(e) for e in s)
+        print ("%s\t%s"%(key, val))
