@@ -33,8 +33,8 @@ for line in sys.stdin:
 			hour = hour_minute_second[0]
 			hour = "{0:0>2}".format(hour)
 			minute = "00"
-			second = hour_minute_second[2]
-			t = [hour,minute]
+			second = "00"
+			t = [hour,minute,second]
 			time_formatted = ':'.join(str(e) for e in t)
 
 
