@@ -107,7 +107,7 @@ def getData(data,type):
 
 
 
-data = open("data/final_data", "rb")
+data = open("data/merged/final_data", "rb")
 datalist = []
 for i, row in enumerate(data):
 
@@ -170,8 +170,8 @@ for i, y_pred in enumerate(clf.staged_predict(X_test)):
     #print y_test,np.array(results)
 #print precision_recall_fscore_support(y_test, np.array(results),average='macro'),mse
 
-plt.figure(figsize=(12, 6))
-plt.subplot(1, 3, 1)
+plt.figure(figsize=(12, 16))
+plt.subplot(3, 1, 1)
 plt.title('Deviance')
 plt.plot(np.arange(params['n_estimators']) + 1, clf.train_score_, 'b-',
          label='Training Set Deviance')
@@ -202,9 +202,12 @@ for k in od:
 x_axis = np.array(x_axis)
 y_axis_expected = np.array(y_axis_expected)
 y_axis_predicted = np.array(y_axis_predicted)
-plt.subplot(1, 3, 2)
+plt.subplot(3, 1, 2)
 
-plt.plot(x_axis,y_axis_expected, 'r--', x_axis,y_axis_predicted, 'b--')
+plt.plot(x_axis,y_axis_expected, 'r-', label='Actual')
+plt.plot( x_axis,y_axis_predicted, 'b-', label='Predicted')
+plt.xlabel('Timeline')
+plt.title('Predicted vs the Actual')
 ####################################################### ########################
 # Plot feature importance
 feature_importance = clf.feature_importances_
@@ -212,7 +215,7 @@ feature_importance = clf.feature_importances_
 feature_importance = 100.0 * (feature_importance / feature_importance.max())
 sorted_idx = np.argsort(feature_importance)
 pos = np.arange(sorted_idx.shape[0]) + .5
-plt.subplot(1, 3, 3)
+plt.subplot(3, 1, 3)
 plt.barh(pos, feature_importance[sorted_idx], align='center')
 plt.yticks(pos, feature_names[sorted_idx])
 plt.xlabel('Relative Importance')
