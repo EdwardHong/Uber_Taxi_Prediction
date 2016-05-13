@@ -29,9 +29,63 @@ def getData(data,type):
 
                 train_data.append(features)
                 train_target.append(target)
+    elif type == 2:
+        featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                         'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR' ,'UBER'])
 
-    return featnames, np.array(train_data), np.array(test_data), \
-               np.array(train_target),np.array(test_target)
+
+        for i, row in enumerate(data):
+            features = row[:-1]
+            features[-1] /= 10
+            target = row.pop(-1)
+            if i % 10 == 0:
+
+                test_data.append(features)
+                test_target.append(target/10)
+            else:
+
+                train_data.append(features)
+                train_target.append(target/10)
+
+    elif type == 3:
+        featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                         'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR' ])
+
+
+        for i, row in enumerate(data):
+            features = row[:-2]
+            features[-1] /= 10
+            target = row.pop(-2)
+            if i % 10 == 0:
+
+                test_data.append(features)
+                test_target.append(target/10)
+            else:
+
+                train_data.append(features)
+                train_target.append(target/10)
+    elif type == 4:
+        featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR', 'TAXI' ])
+
+
+        for i, row in enumerate(data):
+            features = row[:-2] + [row[-1]]
+            features[-1] /= 10
+            target = row.pop(-2)
+            if i % 10 == 0:
+
+                test_data.append(features)
+                test_target.append(target/10)
+            else:
+
+                train_data.append(features)
+                train_target.append(target/10)
+                features = row[:-2]+[row[-1]]
+
+        return featnames, np.array(train_data), np.array(test_data), \
+                   np.array(train_target),np.array(test_target)
+
 
 
 data = open("data/final_data", "rb")
@@ -53,7 +107,7 @@ for i, row in enumerate(data):
 
 train_samples = 100  # Samples used for training the models
 '''
-feature_names, X_train, X_test, y_train, y_test = getData(datalist,1)
+feature_names, X_train, X_test, y_train, y_test = getData(datalist,4)
 
 
 ###############################################################################
@@ -70,7 +124,7 @@ print("MSE: %.4f" % mse_train)
 mse = mean_squared_error(y_test, clf.predict(X_test))
 print("MSE: %.4f" % mse)
 absError = mean_absolute_error(y_test, clf.predict(X_test))
-print absError
+print "Absolute error: ", absError
 ###############################################################################
 # Plot training deviance
 
@@ -87,7 +141,8 @@ for i, y_pred in enumerate(clf.staged_predict(X_test)):
 
     #print y_test,np.array(results)
 #print precision_recall_fscore_support(y_test, np.array(results),average='macro'),mse
-print explained_variance_score(y_test,np.array(results),multioutput='uniform_average')
+print "Explained variance score: ", explained_variance_score\
+    (y_test,np.array(results),multioutput='uniform_average')
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 2, 1)
 plt.title('Deviance')
