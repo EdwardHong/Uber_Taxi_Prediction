@@ -2,7 +2,26 @@
 import sys
 import csv
 import StringIO
-
+'''
+0 STATION
+1 STATION_NAME
+2 DATE
+3 PRCP
+4 SNWD
+5 SNOW
+6 TMAX
+7 TMIN
+8 AWND
+9 WDF2
+10 WDF5
+11 WSF2
+12 WSF5
+13 WT01
+14 WT06
+15 WT02
+16 WT04
+17 WT08
+'''
 #input comes from STDIN (stream data that goes to the program)
 for line in sys.stdin:
     line = line.rstrip()
@@ -25,6 +44,18 @@ for line in sys.stdin:
         elif len(record)==3:
             key = record[0]
             s = [record[1].split(":")[0],record[2]]
-    
+        elif len(record) == 18:
+            key = record[2]
+            s = [
+            record[3],
+            record[4],
+            record[5],
+            record[6],
+            record[7],
+            record[8],
+            record[9],
+            record[10],
+            record[12],
+            record[13]]
         val = ", ".join(str(e) for e in s)
         print ("%s\t%s"%(key, val))
