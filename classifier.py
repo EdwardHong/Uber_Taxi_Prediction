@@ -153,8 +153,9 @@ plt.plot(np.arange(params['n_estimators']) + 1, test_score, 'r-',
 plt.legend(loc='upper right')
 plt.xlabel('Boosting Iterations')
 plt.ylabel('Deviance')
-
-###############################################################################
+for i in xrange(len(X_test)):
+    print X_test[i][0],X_test[i][-2], y_test[i],results[i]
+####################################################### ########################
 # Plot feature importance
 feature_importance = clf.feature_importances_
 # make importances relative to max importance
