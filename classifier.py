@@ -88,7 +88,7 @@ def getData(data,type):
                 train_target.append(target/10)
                 features = row[:-2]+[row[-1]]
 
-        return featnames, np.array(train_data), np.array(test_data), \
+    return featnames, np.array(train_data), np.array(test_data), \
                    np.array(train_target),np.array(test_target)
 
 
@@ -112,7 +112,7 @@ for i, row in enumerate(data):
 
 train_samples = 100  # Samples used for training the models
 '''
-feature_names, X_train, X_test, y_train, y_test = getData(datalist,4)
+feature_names, X_train, X_test, y_train, y_test = getData(datalist,3)
 
 
 ###############################################################################
