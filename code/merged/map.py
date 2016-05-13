@@ -21,6 +21,8 @@ import StringIO
 15 WT02
 16 WT04
 17 WT08
+['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR',
 '''
 #input comes from STDIN (stream data that goes to the program)
 for line in sys.stdin:
@@ -49,9 +51,10 @@ for line in sys.stdin:
             s = [
             record[3],
             record[4],
-            record[5],
+
             record[6],
             record[7],
+            record[5],
             record[8],
             record[9],
             record[10],

@@ -106,9 +106,48 @@ def getData(data,type):
                    np.array(train_target),np.array(test_target)
 
 
+def getdata_predict(d_2014,d_2015):
+    d = d_2014 + d_2015
+    test_data = []
+    train_data = []
+    test_target = []
+    train_target = []
+    featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR' ])
+    length = len(d)
+    for i, row in enumerate(d):
+            features = row[:-1]
+            target = row.pop(-1)
+            if i > length - 720 == 0:
+
+                test_data.append(features)
+                test_target.append(target/10)
+            else:
+
+                train_data.append(features)
+                train_target.append(target/10)
+
+
+    return featnames, np.array(train_data), np.array(test_data), \
+                   np.array(train_target),np.array(test_target)
+
 
 data = open("data/merged/final_data", "rb")
+data_2014 = open("data/merged/2014_merged_reduce_output", "rb")
 datalist = []
+datalist_2014 = []
+datalist_2015 = []
+for i, row in enumerate(data_2014):
+
+    values = row.strip('\n').split('\t')
+    date = values[0]
+    date = float(date)
+    vals = values[1].split(',')
+    new_vals = []
+    for v in vals:
+        new_vals.append(float(v))
+
+    datalist_2014.append([date]+new_vals)
 for i, row in enumerate(data):
 
     values = row.strip('\n').split('\t')
@@ -120,14 +159,16 @@ for i, row in enumerate(data):
         new_vals.append(float(v))
 
     datalist.append([date]+new_vals)
+    datalist_2015.append([date]+new_vals[:-2]+[new_vals[-1]])
 
 '''X, y = datasets.make_classification(n_samples=100000, n_features=20,
                                     n_informative=2, n_redundant=2)
 
 train_samples = 100  # Samples used for training the models
 '''
-feature_names, X_train, X_test, y_train, y_test = getData(datalist,3)
+feature_names, X_train, X_test, y_train, y_test = getData(datalist, 3)
 
+feature_names, X_train, X_test, y_train, y_test = getData_predict(datalist_2014, datalist_2015)
 
 ###############################################################################
 # Fit regression model
