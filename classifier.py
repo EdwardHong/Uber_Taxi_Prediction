@@ -124,12 +124,19 @@ clf = ensemble.GradientBoostingRegressor(**params)
 clf.fit(X_train, y_train)
 print clf.feature_importances_
 mse_train = mean_squared_error(y_train, clf.predict(X_train))
+absError = mean_absolute_error(y_train, clf.predict(X_train))
+print "Absolute error train: ", absError
+
 print("MSE: %.4f" % mse_train)
 
 mse = mean_squared_error(y_test, clf.predict(X_test))
 print("MSE: %.4f" % mse)
 absError = mean_absolute_error(y_test, clf.predict(X_test))
-print "Absolute error: ", absError
+print "Absolute error test: ", absError
+print "Explained variance score - test: ", explained_variance_score\
+    (y_train,clf.predict(X_train),multioutput='uniform_average')
+print "Explained variance score - test: ", explained_variance_score\
+    (y_test,clf.predict(X_test),multioutput='uniform_average')
 ###############################################################################
 # Plot training deviance
 
@@ -146,8 +153,7 @@ for i, y_pred in enumerate(clf.staged_predict(X_test)):
 
     #print y_test,np.array(results)
 #print precision_recall_fscore_support(y_test, np.array(results),average='macro'),mse
-print "Explained variance score: ", explained_variance_score\
-    (y_test,np.array(results),multioutput='uniform_average')
+
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 3, 1)
 plt.title('Deviance')
