@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import collections
 from sklearn import datasets
 from sklearn import ensemble
 from sklearn.metrics import mean_squared_error
@@ -15,6 +16,7 @@ def getData(data,type):
     train_data = []
     train_target = []
     if type == 1:
+        # relationship between weather and taxi
         featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
                          'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR'])
 
@@ -30,6 +32,7 @@ def getData(data,type):
                 train_data.append(features)
                 train_target.append(target)
     elif type == 2:
+        # relationship between weather and taxi given uber data
         featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
                          'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR' ,'UBER'])
 
@@ -48,6 +51,7 @@ def getData(data,type):
                 train_target.append(target/10)
 
     elif type == 3:
+        # relationship between weather and uber
         featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
                          'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR' ])
 
@@ -65,6 +69,7 @@ def getData(data,type):
                 train_data.append(features)
                 train_target.append(target/10)
     elif type == 4:
+        # relationship between weather and uber given taxi
         featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
                      'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR', 'TAXI' ])
 
@@ -144,7 +149,7 @@ for i, y_pred in enumerate(clf.staged_predict(X_test)):
 print "Explained variance score: ", explained_variance_score\
     (y_test,np.array(results),multioutput='uniform_average')
 plt.figure(figsize=(12, 6))
-plt.subplot(1, 2, 1)
+plt.subplot(1, 3, 1)
 plt.title('Deviance')
 plt.plot(np.arange(params['n_estimators']) + 1, clf.train_score_, 'b-',
          label='Training Set Deviance')
@@ -153,8 +158,31 @@ plt.plot(np.arange(params['n_estimators']) + 1, test_score, 'r-',
 plt.legend(loc='upper right')
 plt.xlabel('Boosting Iterations')
 plt.ylabel('Deviance')
+x_axis = []
+d = {}
+c = {}
+y_axis_expected =[]
+y_axis_predicted = []
 for i in xrange(len(X_test)):
-    print X_test[i][0],X_test[i][-2], y_test[i],results[i]
+    if X_test[i][0] not in d:
+        d[X_test[i][0]] = (y_test[i], results[i])
+        c[X_test[i][0]] = 1
+    else:
+        d[X_test[i][0]] += (y_test[i], results[i])
+        c[X_test[i][0]] += 1
+od = collections.OrderedDict(sorted(d.items()))
+for k in od:
+
+    x_axis.append(k)
+    y_axis_expected.append(od[k][0]/c[k])
+    y_axis_predicted.append(od[k][1]/c[k])
+
+x_axis = np.array(x_axis)
+y_axis_expected = np.array(y_axis_expected)
+y_axis_predicted = np.array(y_axis_predicted)
+plt.subplot(1, 3, 2)
+
+plt.plot(x_axis,y_axis_expected, 'r--', x_axis,y_axis_predicted, 'b--')
 ####################################################### ########################
 # Plot feature importance
 feature_importance = clf.feature_importances_
@@ -162,7 +190,7 @@ feature_importance = clf.feature_importances_
 feature_importance = 100.0 * (feature_importance / feature_importance.max())
 sorted_idx = np.argsort(feature_importance)
 pos = np.arange(sorted_idx.shape[0]) + .5
-plt.subplot(1, 2, 2)
+plt.subplot(1, 3, 3)
 plt.barh(pos, feature_importance[sorted_idx], align='center')
 plt.yticks(pos, feature_names[sorted_idx])
 plt.xlabel('Relative Importance')
