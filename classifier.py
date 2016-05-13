@@ -6,6 +6,8 @@ from sklearn import ensemble
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_absolute_error
+from sklearn.grid_search import GridSearchCV
+
 from sklearn.metrics import precision_recall_fscore_support
 import add_more_features
 ############################import###################################################
@@ -86,7 +88,19 @@ def getData(data,type):
 
                 train_data.append(features)
                 train_target.append(target/10)
-                features = row[:-2]+[row[-1]]
+    elif type == 5:
+        featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
+                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR', 'TAXI' ])
+        for i, row in enumerate(data):
+            features = row[:-2] + [row[-1]]
+            features[-1] /= 10
+            target = row.pop(-2)
+            test_data.append(features)
+
+
+
+
+
 
     return featnames, np.array(train_data), np.array(test_data), \
                    np.array(train_target),np.array(test_target)
@@ -117,23 +131,25 @@ feature_names, X_train, X_test, y_train, y_test = getData(datalist,3)
 
 ###############################################################################
 # Fit regression model
-params = {'n_estimators': 5000, 'max_depth': 2, 'min_samples_split': 1,
-          'learning_rate': 0.2, 'loss': 'ls' }
-clf = ensemble.GradientBoostingRegressor(**params)
+params = {'max_depth': 2, 'min_samples_split': 1,
+          'learning_rate': 0.2, 'max_features': 1.0, 'n_estimators':6000}
+#regressor = ensemble.GradientBoostingRegressor(n_estimators=6000)
 
+#clf = GridSearchCV(regressor, params)
+
+clf = ensemble.GradientBoostingRegressor(**params)
 clf.fit(X_train, y_train)
-print clf.feature_importances_
+#print clf.feature_importances_
 mse_train = mean_squared_error(y_train, clf.predict(X_train))
 absError = mean_absolute_error(y_train, clf.predict(X_train))
 print "Absolute error train: ", absError
-
-print("MSE: %.4f" % mse_train)
-
-mse = mean_squared_error(y_test, clf.predict(X_test))
-print("MSE: %.4f" % mse)
-absError = mean_absolute_error(y_test, clf.predict(X_test))
 print "Absolute error test: ", absError
-print "Explained variance score - test: ", explained_variance_score\
+
+print("MSE train: %.4f" % mse_train)
+mse = mean_squared_error(y_test, clf.predict(X_test))
+print("MSE test: %.4f" % mse)
+absError = mean_absolute_error(y_test, clf.predict(X_test))
+print "Explained variance score - train: ", explained_variance_score\
     (y_train,clf.predict(X_train),multioutput='uniform_average')
 print "Explained variance score - test: ", explained_variance_score\
     (y_test,clf.predict(X_test),multioutput='uniform_average')
