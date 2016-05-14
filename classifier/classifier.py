@@ -233,6 +233,8 @@ plt.subplot(3, 1, 2)
 
 plt.plot(x_axis,y_axis_expected, 'r-', label='Actual')
 plt.plot( x_axis,y_axis_predicted, 'b-', label='Predicted')
+plt.legend(loc='upper right')
+
 plt.xlabel('Timeline')
 plt.title('Predicted vs the Actual')
 ####################################################### ########################
