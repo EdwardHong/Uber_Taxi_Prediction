@@ -1,12 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import collections
+from sklearn.pipeline import make_pipeline
 from sklearn import datasets
 from sklearn import ensemble
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_absolute_error
 from sklearn.grid_search import GridSearchCV
+from sklearn.svm import SVR
+from sklearn import linear_model
+from sklearn import preprocessing
+from sklearn import svm
+
 
 from sklearn.metrics import precision_recall_fscore_support
 import add_more_features
@@ -75,7 +81,6 @@ def getData(data,type):
         featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
                      'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR', 'TAXI' ])
 
-
         for i, row in enumerate(data):
             features = row[:-2] + [row[-1]]
             features[-1] /= 10
@@ -101,10 +106,10 @@ def getData_predict(d_2014,d_2015):
     test_target = []
     train_target = []
     featnames = np.array(['DATE', 'PRCP', 'SNWD', 'TMAX', 'TMIN', 'SNOW',
-                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR'])
+                     'AWND', 'WDF2', 'WDF5', 'WSF2', 'WSF5', 'WT01', 'HOUR', 'Prev'])
     length = len(d)
     for i, row in enumerate(d):
-            features = row[:-1]
+            features = row[:-1]+[row[0]-10000]
             target = row[-1]
             if i > length - 720:
 
@@ -114,7 +119,7 @@ def getData_predict(d_2014,d_2015):
 
                 train_data.append(features)
                 train_target.append(target/10)
-   
+
     return featnames, np.array(train_data), np.array(test_data), \
                    np.array(train_target),np.array(test_target)
 
@@ -133,7 +138,6 @@ for i, row in enumerate(data_2014):
     new_vals = []
     for v in vals:
         new_vals.append(float(v))
-    print len([date]+new_vals)
     datalist_2014.append([date]+new_vals)
 for i, row in enumerate(data):
 
@@ -146,7 +150,6 @@ for i, row in enumerate(data):
         new_vals.append(float(v))
 
     datalist.append([date]+new_vals)
-    print len([date]+new_vals[:-2]+[new_vals[-1]])
     datalist_2015.append([date]+new_vals[:-2]+[new_vals[-1]])
 
 '''X, y = datasets.make_classification(n_samples=100000, n_features=20,
@@ -154,21 +157,16 @@ for i, row in enumerate(data):
 
 train_samples = 100  # Samples used for training the models
 '''
-#feature_names, X_train, X_test, y_train, y_test = getData(datalist, 3)
+feature_names, X_train, X_test, y_train, y_test = getData(datalist, 3)
 
-feature_names, X_train, X_test, y_train, y_test = getData_predict(datalist_2014, datalist_2015)
+#feature_names, X_train, X_test, y_train, y_test = getData_predict(datalist_2014, datalist_2015)
 
-###############################################################################
-# Fit regression model
-params = {'max_depth': 2, 'min_samples_split': 1,
-          'learning_rate': 0.2, 'max_features': 1.0, 'n_estimators':6000}
-#regressor = ensemble.GradientBoostingRegressor(n_estimators=6000)
+#params = {'max_depth': [2], 'min_samples_split': [1],'learning_rate': [0.1]}
 
-#clf = GridSearchCV(regressor, params)
-
+#clf = make_pipeline(preprocessing.StandardScaler(),  ensemble.GradientBoostingRegressor(n_estimators=50, learning_rate=0.1, max_depth=2) )
+params = {'max_depth': 3, 'min_samples_split': 1, 'learning_rate': 0.1, 'n_estimators':6000}
 clf = ensemble.GradientBoostingRegressor(**params)
 clf.fit(X_train, y_train)
-#print clf.feature_importances_
 mse_train = mean_squared_error(y_train, clf.predict(X_train))
 absError = mean_absolute_error(y_train, clf.predict(X_train))
 print "Absolute error train: ", absError
