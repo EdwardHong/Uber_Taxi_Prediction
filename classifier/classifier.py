@@ -157,7 +157,7 @@ for i, row in enumerate(data):
 
 train_samples = 100  # Samples used for training the models
 '''
-feature_names, X_train, X_test, y_train, y_test = getData(datalist, 3)
+feature_names, X_train, X_test, y_train, y_test = getData(datalist, 1)
 
 #feature_names, X_train, X_test, y_train, y_test = getData_predict(datalist_2014, datalist_2015)
 
@@ -170,12 +170,13 @@ clf.fit(X_train, y_train)
 mse_train = mean_squared_error(y_train, clf.predict(X_train))
 absError = mean_absolute_error(y_train, clf.predict(X_train))
 print "Absolute error train: ", absError
-print "Absolute error test: ", absError
 
 print("MSE train: %.4f" % mse_train)
 mse = mean_squared_error(y_test, clf.predict(X_test))
 print("MSE test: %.4f" % mse)
 absError = mean_absolute_error(y_test, clf.predict(X_test))
+print "Absolute error test: ", absError
+
 print "Explained variance score - train: ", explained_variance_score\
     (y_train,clf.predict(X_train),multioutput='uniform_average')
 print "Explained variance score - test: ", explained_variance_score\
